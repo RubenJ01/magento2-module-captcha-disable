@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use RJDS\DisableCaptcha\Console\Command\DisableCommand;
 use RJDS\DisableCaptcha\Console\Command\EnableCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class CaptchaCommandsTest extends TestCase
@@ -20,10 +21,13 @@ class CaptchaCommandsTest extends TestCase
 
         /** @var DisableCommand $disableCommand */
         $disableCommand = $objectManager->get(DisableCommand::class);
-        $disableTester = new CommandTester($disableCommand);
+        $application = new Application();
+        $application->add($disableCommand);
+        $disableTester = new CommandTester($application->find('rjds:captcha:disable'));
 
-        $disableExitCode = $disableTester->execute(['--force' => true]);
+        $disableExitCode = $disableTester->execute(['command' => 'rjds:captcha:disable', '--force' => true]);
         $this->assertSame(Command::SUCCESS, $disableExitCode);
+        $this->assertStringNotContainsString('Aborted.', $disableTester->getDisplay());
 
         /** @var ScopeConfigInterface $scopeConfig */
         $scopeConfig = $objectManager->get(ScopeConfigInterface::class);
@@ -32,10 +36,12 @@ class CaptchaCommandsTest extends TestCase
 
         /** @var EnableCommand $enableCommand */
         $enableCommand = $objectManager->get(EnableCommand::class);
-        $enableTester = new CommandTester($enableCommand);
+        $application->add($enableCommand);
+        $enableTester = new CommandTester($application->find('rjds:captcha:enable'));
 
-        $enableExitCode = $enableTester->execute(['--force' => true]);
+        $enableExitCode = $enableTester->execute(['command' => 'rjds:captcha:enable', '--force' => true]);
         $this->assertSame(Command::SUCCESS, $enableExitCode);
+        $this->assertStringNotContainsString('Aborted.', $enableTester->getDisplay());
 
         $this->assertSame('1', (string)$scopeConfig->getValue('customer/captcha/enable'));
         $this->assertSame('recaptcha', (string)$scopeConfig->getValue('recaptcha_frontend/type_for/customer_login'));
