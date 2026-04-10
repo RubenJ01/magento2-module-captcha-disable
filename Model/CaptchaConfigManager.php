@@ -19,21 +19,27 @@ class CaptchaConfigManager
         'admin/captcha/mode' => 'after_fail',
         'msp_securitysuite_recaptcha/frontend/enabled' => '0',
         'msp_securitysuite_recaptcha/backend/enabled' => '0',
-        'recaptcha_frontend/type_for/customer_login' => '0',
-        'recaptcha_frontend/type_for/customer_create' => '0',
-        'recaptcha_frontend/type_for/customer_forgot_password' => '0',
-        'recaptcha_frontend/type_for/customer_edit' => '0',
-        'recaptcha_frontend/type_for/contact' => '0',
-        'recaptcha_frontend/type_for/newsletter' => '0',
-        'recaptcha_frontend/type_for/product_review' => '0',
-        'recaptcha_frontend/type_for/sendfriend' => '0',
-        'recaptcha_frontend/type_for/wishlist' => '0',
-        'recaptcha_frontend/type_for/coupon_code' => '0',
-        'recaptcha_frontend/type_for/place_order' => '0',
-        'recaptcha_frontend/type_for/paypal_payflowpro' => '0',
-        'recaptcha_frontend/type_for/braintree' => '0',
-        'recaptcha_backend/type_for/user_login' => '0',
-        'recaptcha_backend/type_for/user_forgot_password' => '0',
+    ];
+
+    /**
+     * @var string[]
+     */
+    private const RECAPTCHA_TYPE_PATHS = [
+        'recaptcha_frontend/type_for/customer_login',
+        'recaptcha_frontend/type_for/customer_create',
+        'recaptcha_frontend/type_for/customer_forgot_password',
+        'recaptcha_frontend/type_for/customer_edit',
+        'recaptcha_frontend/type_for/contact',
+        'recaptcha_frontend/type_for/newsletter',
+        'recaptcha_frontend/type_for/product_review',
+        'recaptcha_frontend/type_for/sendfriend',
+        'recaptcha_frontend/type_for/wishlist',
+        'recaptcha_frontend/type_for/coupon_code',
+        'recaptcha_frontend/type_for/place_order',
+        'recaptcha_frontend/type_for/paypal_payflowpro',
+        'recaptcha_frontend/type_for/braintree',
+        'recaptcha_backend/type_for/user_login',
+        'recaptcha_backend/type_for/user_forgot_password',
     ];
 
     /**
@@ -58,6 +64,7 @@ class CaptchaConfigManager
         'recaptcha_frontend/type_for/coupon_code' => 'recaptcha',
         'recaptcha_frontend/type_for/place_order' => 'recaptcha',
         'recaptcha_frontend/type_for/paypal_payflowpro' => 'recaptcha',
+        'recaptcha_frontend/type_for/braintree' => 'recaptcha',
         'recaptcha_backend/type_for/user_login' => 'recaptcha',
         'recaptcha_backend/type_for/user_forgot_password' => 'recaptcha',
     ];
@@ -70,6 +77,7 @@ class CaptchaConfigManager
     public function disable(): void
     {
         $this->saveConfig(self::DISABLED_CONFIG);
+        $this->deleteConfig(self::RECAPTCHA_TYPE_PATHS);
     }
 
     public function enable(): void
@@ -84,6 +92,16 @@ class CaptchaConfigManager
     {
         foreach ($config as $path => $value) {
             $this->configWriter->save($path, $value);
+        }
+    }
+
+    /**
+     * @param string[] $paths
+     */
+    private function deleteConfig(array $paths): void
+    {
+        foreach ($paths as $path) {
+            $this->configWriter->delete($path);
         }
     }
 }

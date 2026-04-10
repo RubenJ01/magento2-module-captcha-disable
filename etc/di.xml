@@ -9,7 +9,6 @@
         <plugin name="rjds_disablecaptcha_safe_validation_resolver"
                 type="RJDS\DisableCaptcha\Plugin\ReCaptcha\SafeValidationConfigResolver"/>
     </type>
-
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">

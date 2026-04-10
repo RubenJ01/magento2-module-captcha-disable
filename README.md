@@ -31,10 +31,22 @@ Disable all captcha/reCAPTCHA settings:
 bin/magento rjds:captcha:disable
 ```
 
+Disable captcha and also disable Magento 2FA module entirely:
+
+```bash
+bin/magento rjds:captcha:disable --disable-2fa-module
+```
+
 Enable captcha/reCAPTCHA settings again (using default invisible mode):
 
 ```bash
 bin/magento rjds:captcha:enable
+```
+
+Enable captcha and also re-enable Magento 2FA module:
+
+```bash
+bin/magento rjds:captcha:enable --enable-2fa-module
 ```
 
 ## Production safety

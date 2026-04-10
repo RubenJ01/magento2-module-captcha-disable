@@ -5,6 +5,9 @@ namespace RJDS\DisableCaptcha\Console\Command;
 
 use Magento\Framework\App\State;
 use Magento\Framework\App\Cache\Manager as CacheManager;
+use Magento\Framework\Module\ModuleList;
+use Magento\Framework\Module\Status as ModuleStatus;
+use Magento\Framework\ObjectManagerInterface;
 use RJDS\DisableCaptcha\Model\CaptchaConfigManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +20,8 @@ class EnableCommand extends Command
     public function __construct(
         private CaptchaConfigManager $captchaConfigManager,
         private CacheManager $cacheManager,
-        private State $appState
+        private State $appState,
+        private ObjectManagerInterface $objectManager
     ) {
         parent::__construct();
     }
@@ -32,6 +36,12 @@ class EnableCommand extends Command
             InputOption::VALUE_NONE,
             'Skip production mode confirmation prompt'
         );
+        $this->addOption(
+            'enable-2fa-module',
+            null,
+            InputOption::VALUE_NONE,
+            'Enable Magento_TwoFactorAuth module again'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -42,6 +52,9 @@ class EnableCommand extends Command
         }
 
         $this->captchaConfigManager->enable();
+        if ($input->getOption('enable-2fa-module')) {
+            $this->enableTwoFactorAuthModule($output);
+        }
         $this->cacheManager->flush($this->cacheManager->getAvailableTypes());
         $output->writeln('<info>Captcha and reCAPTCHA settings have been enabled.</info>');
         $output->writeln('<comment>Ensure site keys/domains are configured correctly.</comment>');
@@ -70,5 +83,29 @@ class EnableCommand extends Command
         );
 
         return (bool)$helper->ask($input, $output, $question);
+    }
+
+    private function enableTwoFactorAuthModule(OutputInterface $output): void
+    {
+        $moduleName = 'Magento_TwoFactorAuth';
+        /** @var ModuleList $moduleList */
+        $moduleList = $this->objectManager->get(ModuleList::class);
+        if ($moduleList->has($moduleName)) {
+            $output->writeln('<comment>Magento_TwoFactorAuth is already enabled.</comment>');
+            return;
+        }
+
+        /** @var ModuleStatus $moduleStatus */
+        $moduleStatus = $this->objectManager->get(ModuleStatus::class);
+        $errors = $moduleStatus->checkConstraints(true, [$moduleName]);
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                $output->writeln('<error>' . $error . '</error>');
+            }
+            return;
+        }
+
+        $moduleStatus->setIsEnabled(true, [$moduleName]);
+        $output->writeln('<info>Magento_TwoFactorAuth module enabled. Run setup:upgrade after this command.</info>');
     }
 }
