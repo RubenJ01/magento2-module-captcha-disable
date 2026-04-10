@@ -1,5 +1,5 @@
 {
-  "name": "rjds/module-disable-captcha",
+  "name": "rjds/magento2-module-captcha-disable",
   "description": "Magento 2 module to disable and enable captcha/reCAPTCHA via CLI",
   "type": "magento2-module",
   "license": [
