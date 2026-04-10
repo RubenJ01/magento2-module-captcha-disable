@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\ReCaptchaUi\Model\UiConfigResolver">
+        <plugin name="rjds_disablecaptcha_safe_ui_resolver"
+                type="RJDS\DisableCaptcha\Plugin\ReCaptcha\SafeUiConfigResolver"/>
+    </type>
+    <type name="Magento\ReCaptchaUi\Model\ValidationConfigResolver">
+        <plugin name="rjds_disablecaptcha_safe_validation_resolver"
+                type="RJDS\DisableCaptcha\Plugin\ReCaptcha\SafeValidationConfigResolver"/>
+    </type>
+
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="rjdsCaptchaDisable" xsi:type="object">RJDS\DisableCaptcha\Console\Command\DisableCommand</item>
+                <item name="rjdsCaptchaEnable" xsi:type="object">RJDS\DisableCaptcha\Console\Command\EnableCommand</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

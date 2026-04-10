@@ -1,0 +1,19 @@
+{
+  "name": "rjds/module-disable-captcha",
+  "description": "Magento 2 module to disable and enable captcha/reCAPTCHA via CLI",
+  "type": "magento2-module",
+  "license": [
+    "MIT"
+  ],
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "RJDS\\DisableCaptcha\\": ""
+    }
+  }
+}
